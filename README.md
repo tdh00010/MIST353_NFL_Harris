@@ -1,2 +1,0 @@
-# MIST353_NFL_Harris
-Repo for NFL MIST353
