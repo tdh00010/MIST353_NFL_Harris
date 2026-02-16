@@ -1,0 +1,3 @@
+--Insert data
+--Insert all the CONferenceDivision data (8 rows)
+--Insert team data for AFC North (4 rows)
