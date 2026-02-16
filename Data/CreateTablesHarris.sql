@@ -8,6 +8,9 @@ Use MIST353_NFL_RDB_Harris
 
 -- Create tables for first iteration
 
+DROP TABLE IF EXISTS Team;
+DROP TABLE IF EXISTS ConferenceDivision;
+
 create TABLE ConferenceDivision (
     ConferenceDivision INT identity(1,1)
         constraint PK_ConferenceDivision PRIMARY KEY,
