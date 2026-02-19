@@ -1,36 +1,43 @@
---Create a database for NFL app
---use master;
+USE MIST353_NFL_RDB_Harris;
+GO
 
---Create DATABASE MIST353_NFL_RDB_Harris;
+-- Drop tables in correct order (child first)
+IF OBJECT_ID('Team') IS NOT NULL
+    DROP TABLE Team;
 
-Use MIST353_NFL_RDB_Harris
+IF OBJECT_ID('ConferenceDivision') IS NOT NULL
+    DROP TABLE ConferenceDivision;
+GO
 
 
--- Create tables for first iteration
+-- Create ConferenceDivision table
+CREATE TABLE ConferenceDivision (
+    ConferenceDivision INT IDENTITY(1,1)
+        CONSTRAINT PK_ConferenceDivision PRIMARY KEY,
 
-DROP TABLE IF EXISTS Team;
-DROP TABLE IF EXISTS ConferenceDivision;
+    Conference NVARCHAR(50) NOT NULL
+        CONSTRAINT CK_ConferenceNames CHECK (Conference IN ('AFC', 'NFC')),
 
-create TABLE ConferenceDivision (
-    ConferenceDivision INT identity(1,1)
-        constraint PK_ConferenceDivision PRIMARY KEY,
-    Conference NVARCHAR(50) NOT NULL,
-        constraint CK_ConferenceNames CHECK (Conference IN ('AFC', 'NFC')),
-    Division NVARCHAR(50) NOT NULL,
-        constraint CK_DivisionNames CHECK (Division IN ('East', 'North', 'West', 'South'))
+    Division NVARCHAR(50) NOT NULL
+        CONSTRAINT CK_DivisionNames CHECK (Division IN ('East', 'North', 'West', 'South')),
+
+    CONSTRAINT UK_ConferenceDivision UNIQUE (Conference, Division)
 );
+GO
 
-create TABLE Team (
-    TeamID INT identity(1,1)
-        constraint PK_Team PRIMARY KEY,
-    TeamName NVARCHAR(50) Not Null,
+
+-- Create Team table
+CREATE TABLE Team (
+    TeamID INT IDENTITY(1,1)
+        CONSTRAINT PK_Team PRIMARY KEY,
+
+    TeamName NVARCHAR(50) NOT NULL,
     TeamCityState NVARCHAR(50) NOT NULL,
     TeamColor NVARCHAR(50) NOT NULL,
+
     ConferenceDivision INT NOT NULL,
-        constraint FK_Team_ConferenceDivision FOREIGN KEY (ConferenceDivision) REFERENCES ConferenceDivision(ConferenceDivision)
+    CONSTRAINT FK_Team_ConferenceDivision
+        FOREIGN KEY (ConferenceDivision)
+        REFERENCES ConferenceDivision(ConferenceDivision)
 );
-
-
-
-
-        
+GO

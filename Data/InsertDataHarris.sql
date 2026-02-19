@@ -2,6 +2,8 @@
 --Insert all the CONferenceDivision data (8 rows)
 --Insert team data for AFC North (4 rows)
 
+USE MIST353_NFL_RDB_Harris;
+
 INSERT INTO ConferenceDivision (Conference, Division)
 VALUES
 ('AFC', 'East'),
@@ -13,6 +15,7 @@ VALUES
 ('NFC', 'South'),
 ('NFC', 'West');
 
+-- Information for AFC North Teams
 INSERT INTO Team (TeamName, TeamCityState, TeamColor, ConferenceDivision)
 VALUES
 ('Ravens', 'Baltimore, MD', 'Purple/Black', 2),
