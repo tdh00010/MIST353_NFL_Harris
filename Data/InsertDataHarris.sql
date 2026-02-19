@@ -16,7 +16,7 @@ VALUES
 ('NFC', 'West');
 
 GO
-select * from ConferenceDivision order by ConferenceDivisionID;
+SELECT * FROM ConferenceDivision ORDER BY ConferenceDivisionID;
 GO
 
 -- Information for AFC North Teams
