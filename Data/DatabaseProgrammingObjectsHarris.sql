@@ -53,3 +53,5 @@ execute ProcGetTeamsByConferenceDivision
 
 */
 GO
+
+-- Find all team in my teams divioson (user optionally provides their team name)
