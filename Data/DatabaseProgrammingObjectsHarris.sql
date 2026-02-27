@@ -1,7 +1,7 @@
 -- 3 queries
 -- 1 each for ConferenceDivision and team tables, and 1 join query
 USE MIST353_NFL_RDB_Harris;
-go
+GO
 
 /*--Query for ConferenceDivision table
 SELECT
@@ -31,27 +31,39 @@ GO*/
 
 --4th query
 
-Create or alter procedure procGetTeamsByConferenceDivision
+CREATE OR ALTER PROCEDURE procGetTeamsByConferenceDivision
 (
-    @Conference NVARCHAR(50) = null,
-    @Division NVARCHAR(50) = null
+    @Conference NVARCHAR(50) = NULL,
+    @Division NVARCHAR(50) = NULL
 )
 AS
-Begin
-    SELECT T.TeamName, T.TeamColor, CD.Conference, CD.Division
+BEGIN
+    SELECT 
+        T.TeamName,T.TeamColor,CD.Conference,CD.Division
     FROM Team AS T
     INNER JOIN ConferenceDivision AS CD
         ON T.ConferenceDivision = CD.ConferenceDivisionID
-    WHERE (@Conference IS NULL OR CD.Conference =IsNull(@ConferenceName, Conference))
-      AND (@Division IS NULL OR CD.Division = IsNull(@DivisionName, Division))
+    WHERE (@Conference IS NULL OR CD.Conference = @Conference)
+      AND (@Division IS NULL OR CD.Division = @Division)
     ORDER BY T.TeamName;
-End;
-/*
-execute ProcGetTeamsByConferenceDivision
+END;
+
+
+/*execute ProcGetTeamsByConferenceDivision
 @ConfernceName = 'AFC'
-@DivisionName = 'North'
+@DivisionName = 'North*/
 
-*/
 GO
+select * from Team
 
--- Find all team in my teams divioson (user optionally provides their team name)
+DECLARE @MyTeamName NVARCHAR(50) = 'Pittsburgh Steelers';
+
+SELECT OtherTeam.TeamName
+FROM Team AS MyTeam
+INNER JOIN Team AS OtherTeam
+    ON MyTeam.ConferenceDivision = OtherTeam.ConferenceDivision
+WHERE MyTeam.TeamName = @MyTeamName
+  AND OtherTeam.TeamName <> @MyTeamName;
+
+--FindAllTeamsInMyDivision
+
