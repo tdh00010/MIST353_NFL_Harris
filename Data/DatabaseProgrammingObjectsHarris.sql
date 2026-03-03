@@ -53,7 +53,7 @@ END;
 @ConfernceName = 'AFC'
 @DivisionName = 'North*/
 
-GO
+/*GO
 select * from Team
 
 DECLARE @MyTeamName NVARCHAR(50) = 'Pittsburgh Steelers';
@@ -64,6 +64,18 @@ INNER JOIN Team AS OtherTeam
     ON MyTeam.ConferenceDivision = OtherTeam.ConferenceDivision
 WHERE MyTeam.TeamName = @MyTeamName
   AND OtherTeam.TeamName <> @MyTeamName;
-
+*/
 --FindAllTeamsInMyDivision
 
+
+DECLARE @MyTeamName NVARCHAR(50) = 'Pittsburgh Steelers';
+
+SELECT 
+    OtherTeam.TeamName, OtherTeam.TeamCityState,CD.Conference,CD.Division
+FROM Team AS MyTeam
+INNER JOIN Team AS OtherTeam
+    ON MyTeam.ConferenceDivision = OtherTeam.ConferenceDivision
+INNER JOIN ConferenceDivision AS CD
+    ON MyTeam.ConferenceDivision = CD.ConferenceDivisionID
+WHERE MyTeam.TeamName = @MyTeamName
+ORDER BY OtherTeam.TeamName;
