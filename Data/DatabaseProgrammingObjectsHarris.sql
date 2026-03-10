@@ -3,6 +3,8 @@
 USE MIST353_NFL_RDB_Harris;
 GO
 
+--use [mist353-nfl-rdb-harris]
+--go
 /*--Query for ConferenceDivision table
 SELECT
     ConferenceDivisionID,
@@ -73,7 +75,7 @@ DECLARE @MyTeamName NVARCHAR(50) = 'Pittsburgh Steelers';
 SELECT 
     OtherTeam.TeamName, OtherTeam.TeamCityState,CD.Conference,CD.Division
 FROM Team AS MyTeam
-INNER JOIN Team AS OtherTeam
+INNER JOIN Team AS OtherTeam 
     ON MyTeam.ConferenceDivision = OtherTeam.ConferenceDivision
 INNER JOIN ConferenceDivision AS CD
     ON MyTeam.ConferenceDivision = CD.ConferenceDivisionID
