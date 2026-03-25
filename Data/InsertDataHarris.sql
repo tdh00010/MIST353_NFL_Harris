@@ -2,10 +2,12 @@
 --Insert all the CONferenceDivision data (8 rows)
 --Insert team data for AFC North (4 rows)
 
-USE MIST353_NFL_RDB_Harris;
-
+--USE MIST353_NFL_RDB_Harris;
+use [mist353-nfl-rdb-harris]
+--DELETE FROM Team;
+--DELETE FROM ConferenceDivision;
 INSERT INTO ConferenceDivision (Conference, Division)
-VALUES
+values
 ('AFC', 'North'),
 ('AFC', 'South'),
 ('AFC', 'East'),

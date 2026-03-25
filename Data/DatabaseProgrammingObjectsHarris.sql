@@ -1,10 +1,31 @@
 -- 3 queries
 -- 1 each for ConferenceDivision and team tables, and 1 join query
-USE MIST353_NFL_RDB_Harris;
-GO
+--USE MIST353_NFL_RDB_Harris;
+--GO
 
---use [mist353-nfl-rdb-harris]
---go
+use [mist353-nfl-rdb-harris]
+go
+
+CREATE OR ALTER PROCEDURE procGetTeamsInSameConferenceDivisionAsSpecifiedTeam
+    @TeamName NVARCHAR(50)
+AS
+BEGIN
+    SELECT 
+        OtherTeam.TeamName,
+        OtherTeam.TeamCityState,
+        OtherTeam.TeamColor,
+        CD.Conference,
+        CD.Division
+    FROM Team AS MyTeam
+    INNER JOIN Team AS OtherTeam
+        ON MyTeam.ConferenceDivision = OtherTeam.ConferenceDivision
+    INNER JOIN ConferenceDivision AS CD
+        ON MyTeam.ConferenceDivision = CD.ConferenceDivisionID
+    WHERE MyTeam.TeamName = @TeamName
+      AND OtherTeam.TeamName <> @TeamName
+    ORDER BY OtherTeam.TeamName;
+END;
+GO
 /*--Query for ConferenceDivision table
 SELECT
     ConferenceDivisionID,
@@ -29,7 +50,7 @@ FROM Team AS t
 INNER JOIN ConferenceDivision AS cd
     ON t.ConferenceDivision = cd.ConferenceDivisionID
 ORDER BY t.TeamName;
-GO*/
+GO 
 
 --4th query
 
@@ -51,9 +72,9 @@ BEGIN
 END;
 
 
-/*execute ProcGetTeamsByConferenceDivision
+execute ProcGetTeamsByConferenceDivision
 @ConfernceName = 'AFC'
-@DivisionName = 'North*/
+@DivisionName = 'North */
 
 GO
 select * from Team

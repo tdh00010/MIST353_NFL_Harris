@@ -1,4 +1,5 @@
 USE MIST353_NFL_RDB_Harris;
+--use [mist353-nfl-rdb-harris]
 GO
 
 IF OBJECT_ID('Team', 'U') IS NOT NULL
