@@ -74,7 +74,7 @@ END;
 
 execute ProcGetTeamsByConferenceDivision
 @ConfernceName = 'AFC'
-@DivisionName = 'North */
+@DivisionName = 'North'; */
 
 GO
 select * from Team
@@ -92,3 +92,21 @@ INNER JOIN ConferenceDivision AS CD
     ON MyTeam.ConferenceDivision = CD.ConferenceDivisionID
 WHERE MyTeam.TeamName = @MyTeamName
 ORDER BY OtherTeam.TeamName;
+
+GO
+
+create or alter procedure procValidateUser
+(
+    @Email NVARCHAR(100),
+    @PasswordHash NVARCHAR(200)
+)
+AS
+BEGIN
+    select AppUserID, Firstname + ' ' + Lastname as Fullname, UserRole
+    from AppUser
+    where Email = @Email
+      and PasswordHash = convert(Varbinary(200),@PasswordHash,1);
+END;
+
+--execute procValidateUser @Email = 'tom.brady@example.com', @PasswordHash = 0x01;
+--select * from AppUser;
