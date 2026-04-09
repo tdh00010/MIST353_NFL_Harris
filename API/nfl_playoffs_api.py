@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from get_teams_by_conference_division import get_teams_by_conference_division
 from get_teams_in_same_conference_division_as_specified_team import get_teams_in_same_conference_division_as_specified_team
 from validate_user import validate_user
+from get_teams_for_specified_fan import get_teams_for_specified_fan
 
 app = FastAPI()
 
@@ -16,3 +17,7 @@ def get_teams_in_same_conference_division_as_specified_team_api(team_name: str):
 @app.get("/validate_user")
 def validate_user_api(email: str, password_hash: str):
     return validate_user(email=email, password_hash=password_hash)
+
+@app.get("/get_teams_for_specified_fan")
+def get_teams_for_specified_fan_api(nfl_fan_id: int):
+    return get_teams_for_specified_fan(nfl_fan_id)

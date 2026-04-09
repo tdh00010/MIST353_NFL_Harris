@@ -110,3 +110,32 @@ END;
 
 --execute procValidateUser @Email = 'tom.brady@example.com', @PasswordHash = 0x01;
 --select * from AppUser;
+
+GO
+
+CREATE OR ALTER PROCEDURE procGetTeamsForSpecifiedFan
+(
+    @NFLFanID INT
+)
+AS
+BEGIN
+    SELECT 
+        T.TeamName,
+        CD.Conference,
+        CD.Division,
+        T.TeamColor,
+        FT.PrimaryTeam
+    FROM NFLFan AS F
+    INNER JOIN FanTeam AS FT
+        ON F.NFLFanID = FT.NFLFanID
+    INNER JOIN Team AS T
+        ON FT.TeamID = T.TeamID
+    INNER JOIN ConferenceDivision AS CD
+        ON T.ConferenceDivision = CD.ConferenceDivisionID
+    WHERE F.NFLFanID = @NFLFanID
+    ORDER BY FT.PrimaryTeam DESC, T.TeamName;
+END;
+GO
+
+--execute procGetTeamsForSpecifiedFan @NFLFanID = 1;
+--execute procGetTeamsForSpecifiedFan @NFLFanID = 2;
