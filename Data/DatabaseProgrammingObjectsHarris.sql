@@ -139,3 +139,98 @@ GO
 
 --execute procGetTeamsForSpecifiedFan @NFLFanID = 1;
 --execute procGetTeamsForSpecifiedFan @NFLFanID = 2;
+
+
+CREATE OR ALTER PROCEDURE procScheduleGame
+(
+    @HomeTeamID INT,
+    @AwayTeamID INT,
+    @GameRound NVARCHAR(50),
+    @GameDate DATE,
+    @GameStartTime TIME,
+    @StadiumID INT,
+    @NFLAdminID INT
+)
+AS
+BEGIN
+
+    DECLARE @context VARBINARY(128) = CAST(@NFLAdminID AS VARBINARY(128));
+    SET CONTEXT_INFO @context;
+
+    INSERT INTO Game (HomeTeamID, AwayTeamID, GameRound, GameDate, GameStartTime, StadiumID)
+    VALUES (@HomeTeamID, @AwayTeamID, @GameRound, @GameDate, @GameStartTime, @StadiumID);
+
+END;
+
+GO
+
+CREATE OR ALTER TRIGGER trgTrackChangesOnSchedulingGame
+ON Game
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @NFLAdminID INT;
+    DECLARE @GameID INT;
+    DECLARE @ChangeType NVARCHAR(50);
+    DECLARE @ChangeDescription NVARCHAR(500);
+    DECLARE @GameRound NVARCHAR(50);
+    DECLARE @GameDate DATE;
+    DECLARE @GameStartTime TIME;
+    DECLARE @HomeTeamID INT;
+    DECLARE @AwayTeamID INT;
+    DECLARE @StadiumID INT;
+    DECLARE @HomeTeamName NVARCHAR(100);
+    DECLARE @AwayTeamName NVARCHAR(100);
+    DECLARE @StadiumName NVARCHAR(100);
+    DECLARE @AdminFullName NVARCHAR(100);
+
+    SET @NFLAdminID = CONVERT(INT, CONVERT(BINARY(4), CONTEXT_INFO()));
+
+    SELECT 
+        @GameID = GameID,
+        @GameRound = GameRound,
+        @GameDate = GameDate,
+        @GameStartTime = GameStartTime,
+        @HomeTeamID = HomeTeamID,
+        @AwayTeamID = AwayTeamID,
+        @StadiumID = StadiumID
+    FROM inserted;
+
+    SELECT @HomeTeamName = TeamName 
+    FROM Team 
+    WHERE TeamID = @HomeTeamID;
+
+    SELECT @AwayTeamName = TeamName 
+    FROM Team 
+    WHERE TeamID = @AwayTeamID;
+
+    SELECT @StadiumName = StadiumName 
+    FROM Stadium 
+    WHERE StadiumID = @StadiumID;
+
+    SELECT @AdminFullName = Firstname + ' ' + Lastname 
+    FROM AppUser 
+    WHERE AppUserID = @NFLAdminID;
+
+    SET @ChangeType = 'Insert';
+
+    SET @ChangeDescription = 
+        'Game scheduled with GameID: ' + CAST(@GameID AS NVARCHAR(50))
+        + ': ' + @HomeTeamName + ' vs ' + @AwayTeamName
+        + ' on ' + CAST(@GameDate AS NVARCHAR(50))
+        + ' at ' + CAST(@GameStartTime AS NVARCHAR(50))
+        + ' in stadium ' + @StadiumName
+        + '. Game Round: ' + @GameRound
+        + '. Scheduled by: ' + ISNULL(@AdminFullName, 'Unknown Admin');
+
+    INSERT INTO AdminChangesTracker 
+        (NFLAdminID, GameID, ChangeType, ChangeDescription)
+    VALUES 
+        (@NFLAdminID, @GameID, @ChangeType, @ChangeDescription);
+END;
+GO
+
+/*
+
+
+*/
