@@ -23,9 +23,13 @@ def validate_user_ui():
         df = fetch_data("validate_user", input_params)
 
         if df is not None and not df.empty:
+            # ✅ FIXED: correct column access + correct casing
+            st.session_state.app_user_id = df["AppUserID"].values[0]
+            st.session_state.app_user_fullname = df["Fullname"].values[0]
+            st.session_state.user_role = df["UserRole"].values[0]
+
+            st.success(f"Welcome {st.session_state.app_user_fullname}!")
             st.subheader(f"User {email} is valid:")
             st.dataframe(df, use_container_width=True, hide_index=True)
-            st.session_state.app_user_id = df.iloc["AppUserID"].values[0]
-            st.session_state.app_user_fullname = df["FullName"].values[0]
         else:
             st.info(f"User {email} is not valid.")
