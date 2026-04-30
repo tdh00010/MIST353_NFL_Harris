@@ -3,9 +3,9 @@ import requests
 import pandas as pd
 
 #Local API
-FASTAPI_URL = "http://localhost:8000/docs"
+#FASTAPI_URL = "http://localhost:8000"
 #Azure API
-#FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net/"
+FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net/"
 
 def fetch_data(endpoint: str, input_params: dict = None, method: str = "GET"):
     if input_params is None:
