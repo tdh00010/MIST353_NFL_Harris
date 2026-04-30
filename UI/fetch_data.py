@@ -2,19 +2,46 @@ import streamlit as st
 import requests
 import pandas as pd
 
-#FASTAPI_URL = "http://localhost:8000"
-FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net/"
+#Local API
+FASTAPI_URL = "http://localhost:8000/docs"
+#Azure API
+#FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net/"
 
-def fetch_data(endpoint: str, input_params: dict, method: str = "GET"):
-    if method == "GET":
-        response = requests.get(f"{FASTAPI_URL}/{endpoint}", params=input_params)
+def fetch_data(endpoint: str, input_params: dict = None, method: str = "GET"):
+    if input_params is None:
+        input_params = {}
+
+    url = f"{FASTAPI_URL}/{endpoint}".rstrip("/")
+
+    try:
+        if method.upper() == "GET":
+            response = requests.get(url, params=input_params)
+
+        elif method.upper() == "POST":
+            response = requests.post(url, params=input_params)
+
+        else:
+            st.error(f"Unsupported method: {method}")
+            return pd.DataFrame()
 
         if response.status_code == 200:
             payload = response.json()
-            rows = payload.get("data", [])
-            df = pd.DataFrame(rows)
-            return df
-        else:
-            st.error(f"Error fetching data: {response.status_code}")
-            return pd.DataFrame()  # Return an empty DataFrame on error
-            
+
+            if isinstance(payload, dict) and "data" in payload:
+                return pd.DataFrame(payload["data"])
+
+            if isinstance(payload, dict):
+                return pd.DataFrame([payload])
+
+            if isinstance(payload, list):
+                return pd.DataFrame(payload)
+
+            return pd.DataFrame()
+
+        st.error(f"Error fetching data: {response.status_code}")
+        st.write(response.text)
+        return pd.DataFrame()
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Connection error: {e}")
+        return pd.DataFrame()
