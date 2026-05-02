@@ -1,6 +1,17 @@
 import streamlit as st
 from fetch_data import fetch_data
 
+
+def build_id_lookup(data, id_column, name_column):
+    if data is None or data.empty:
+        return {}
+
+    return {
+        row[name_column]: int(row[id_column])
+        for _, row in data.iterrows()
+    }
+
+
 def schedule_game_ui():
     st.header("Schedule a Game")
 
@@ -13,41 +24,22 @@ def schedule_game_ui():
         st.error("Only NFL Admin users can schedule games.")
         return
 
-    # Static data (you can replace with DB later if needed)
-    teams = {
-        "Baltimore Ravens": 1,
-        "Cincinnati Bengals": 2,
-        "Cleveland Browns": 3,
-        "Pittsburgh Steelers": 4,
-        "Houston Texans": 5,
-        "Indianapolis Colts": 6,
-        "Jacksonville Jaguars": 7,
-        "Tennessee Titans": 8
-    }
+    team_data = fetch_data("get_all_teams")
+    stadium_data = fetch_data("get_all_stadiums")
 
-    stadiums = {
-        "M&T Bank Stadium": 1,
-        "Acrisure Stadium": 2,
-        "Paycor Stadium": 3,
-        "Cleveland Browns Stadium": 4
-    }
+    teams = build_id_lookup(team_data, "TeamID", "TeamName")
+    stadiums = build_id_lookup(stadium_data, "StadiumID", "StadiumName")
 
-    game_rounds = [
-        "Wild Card",
-        "Divisional Round",
-        "Conference Championship",
-        "Super Bowl"
-    ]
+    if not teams or not stadiums:
+        st.error("Teams or stadiums could not be loaded.")
+        return
 
-    times = [
-        "13:00:00",
-        "16:00:00",
-        "20:00:00"
-]
+    game_rounds = ["Wild Card", "Divisional", "Conference", "Super Bowl"]
+    times = ["13:00:00", "16:00:00", "20:00:00"]
 
     # UI Inputs
-    home_team = st.selectbox("Select Home Team", list(teams.keys()))
-    away_team = st.selectbox("Select Away Team", list(teams.keys()))
+    home_team = st.selectbox("Select Home Team", list(teams.keys()), index=0)
+    away_team = st.selectbox("Select Away Team", list(teams.keys()), index=1)
     stadium = st.selectbox("Select Stadium", list(stadiums.keys()))
     game_round = st.selectbox("Select Game Round", game_rounds)
     game_date = st.date_input("Select Game Date")

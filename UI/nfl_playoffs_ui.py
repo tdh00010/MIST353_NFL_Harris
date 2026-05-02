@@ -6,8 +6,8 @@ from validate_user_ui import validate_user_ui
 from schedule_game_ui import schedule_game_ui
 
 def nfl_playoffs_ui():
-    st.title("NFL Playoffs Dashboard")
-    st.write("Welcome to the NFL Playoffs Dashboard!")
+    st.title("NFL Playoffs App")
+    st.caption("Use the sidebar to navigate through different features.")
 
     # Sidebar menu
     with st.sidebar:
