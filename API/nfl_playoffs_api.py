@@ -6,6 +6,8 @@ from get_teams_in_same_conference_division_as_specified_team import get_teams_in
 from validate_user import validate_user
 from get_teams_for_specified_fan import get_teams_for_specified_fan
 from schedule_game import schedule_game
+from get_all_teams import get_all_teams
+from get_all_stadiums import get_all_stadiums
 
 app = FastAPI()
 
@@ -44,3 +46,11 @@ def schedule_game_api(
         stadium_id=stadium_id,
         nfl_admin_id=nfl_admin_id
     )
+
+@app.get("/get_all_teams")
+def get_all_teams_api():
+    return get_all_teams()
+
+@app.get("/get_all_stadiums")
+def get_all_stadiums_api():
+    return get_all_stadiums()

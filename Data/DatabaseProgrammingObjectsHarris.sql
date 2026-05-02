@@ -230,7 +230,113 @@ BEGIN
 END;
 GO
 
-/*
+-- To create dropdown lists for the NFLAdmin to select Teams and Stadiums to schedule games.
+
+CREATE OR ALTER PROCEDURE procGetAllTeams
+AS
+BEGIN
+    SELECT 
+        TeamID, 
+        TeamName
+    FROM Team
+    ORDER BY TeamName;
+END;
+GO
+
+--EXEC procGetAllTeams;
 
 
-*/
+CREATE OR ALTER PROCEDURE procGetAllStadiums
+AS
+BEGIN
+    SELECT 
+        StadiumID, 
+        StadiumName
+    FROM Stadium
+    ORDER BY StadiumName;
+END;
+GO
+
+--EXEC procGetAllStadiums;
+
+
+-- To get all changes made by a specified logged in NFLAdmin.
+
+CREATE OR ALTER PROCEDURE procGetAllChangesMadeBySpecifiedAdmin
+(
+    @NFLAdminID INT
+)
+AS
+BEGIN
+    SELECT 
+        ACT.ChangeDateTime, 
+        ACT.ChangeType, 
+        ACT.ChangeDescription, 
+        G.GameRound, 
+        G.GameDate, 
+        G.GameStartTime,
+        HT.TeamName AS HomeTeam, 
+        AT.TeamName AS AwayTeam, 
+        S.StadiumName
+    FROM AdminChangesTracker ACT 
+    INNER JOIN Game G
+        ON ACT.GameID = G.GameID
+    INNER JOIN Team HT
+        ON G.HomeTeamID = HT.TeamID
+    INNER JOIN Team AT
+        ON G.AwayTeamID = AT.TeamID
+    INNER JOIN Stadium S
+        ON G.StadiumID = S.StadiumID
+    WHERE ACT.NFLAdminID = @NFLAdminID
+    ORDER BY ACT.ChangeDateTime DESC;
+END;
+GO
+
+--EXEC procGetAllChangesMadeBySpecifiedAdmin @NFLAdminID = 5;
+
+
+-- Disabling and enabling triggers on the Game table. When and Why?
+
+-- DISABLE TRIGGER trgTrackChangesOnSchedulingGame ON Game;
+-- DISABLE TRIGGER ALL ON Game;
+
+-- ENABLE TRIGGER trgTrackChangesOnSchedulingGame ON Game;
+-- ENABLE TRIGGER ALL ON Game;
+GO
+
+
+-- Adding TeamLogo column to Team table safely
+
+IF COL_LENGTH('Team', 'TeamLogo') IS NULL
+BEGIN
+    ALTER TABLE Team
+    ADD TeamLogo VARBINARY(MAX);
+END;
+GO
+
+
+-- Get teams with logos for a specified fan
+
+CREATE OR ALTER PROCEDURE procGetTeamsWithLogosForSpecifiedFan
+(
+    @NFLFanID INT
+)
+AS
+BEGIN
+    SELECT 
+        T.TeamName, 
+        CD.Conference, 
+        CD.Division, 
+        T.TeamColor,
+        FT.PrimaryTeam, 
+        T.TeamLogo
+    FROM FanTeam FT 
+    INNER JOIN Team T
+        ON FT.TeamID = T.TeamID
+    INNER JOIN ConferenceDivision CD
+        ON T.ConferenceDivision = CD.ConferenceDivisionID
+    WHERE FT.NFLFanID = @NFLFanID;
+END;
+GO
+
+--EXEC procGetTeamsWithLogosForSpecifiedFan @NFLFanID = 1;
