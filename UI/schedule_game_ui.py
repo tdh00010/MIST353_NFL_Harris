@@ -12,17 +12,57 @@ def build_id_lookup(data, id_column, name_column):
     }
 
 
+def validate_admin_for_scheduling():
+    st.info("Validate as an NFL Admin to schedule a game.")
+
+    email = st.text_input("Admin Email", key="schedule_admin_email")
+    password = st.text_input("Admin Password", type="password", key="schedule_admin_password")
+
+    if st.button("Validate Admin", key="schedule_validate_admin"):
+        if not email.strip() or not password.strip():
+            st.error("Please enter both email and password.")
+            return
+
+        result = fetch_data(
+            "validate_user",
+            {
+                "email": email.strip(),
+                "password_hash": password.strip()
+            }
+        )
+
+        if result is None or result.empty:
+            st.error("Admin user is not valid.")
+            return
+
+        user_role = result["UserRole"].values[0]
+
+        if user_role != "NFLAdmin":
+            st.error("This user is valid, but is not an NFL Admin.")
+            return
+
+        st.session_state.app_user_id = result["AppUserID"].values[0]
+        st.session_state.app_user_fullname = result["Fullname"].values[0]
+        st.session_state.user_role = user_role
+        st.rerun()
+
+
 def schedule_game_ui():
     st.header("Schedule a Game")
 
     # Require user validation
     if "app_user_id" not in st.session_state:
-        st.warning("Please validate/login before scheduling a game.")
+        validate_admin_for_scheduling()
         return
 
     if st.session_state.get("user_role") != "NFLAdmin":
-        st.error("Only NFL Admin users can schedule games.")
+        current_user = st.session_state.get("app_user_fullname", "Current user")
+        current_role = st.session_state.get("user_role", "Unknown role")
+        st.warning(f"{current_user} is logged in as {current_role}. Only NFL Admin users can schedule games.")
+        validate_admin_for_scheduling()
         return
+
+    st.caption(f"Scheduling as {st.session_state.app_user_fullname}")
 
     team_data = fetch_data("get_all_teams")
     stadium_data = fetch_data("get_all_stadiums")

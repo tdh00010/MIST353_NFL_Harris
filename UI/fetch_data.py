@@ -5,13 +5,13 @@ import pandas as pd
 #Local API
 #FASTAPI_URL = "http://localhost:8000"
 #Azure API
-FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net/"
+FASTAPI_URL = "https://mist353-api-harris.azurewebsites.net"
 
 def fetch_data(endpoint: str, input_params: dict = None, method: str = "GET"):
     if input_params is None:
         input_params = {}
 
-    url = f"{FASTAPI_URL}/{endpoint}".rstrip("/")
+    url = f"{FASTAPI_URL.rstrip('/')}/{endpoint.lstrip('/')}"
 
     try:
         if method.upper() == "GET":
