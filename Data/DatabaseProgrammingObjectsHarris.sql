@@ -314,6 +314,18 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE dbo.procUpdateTeamLogo
+(
+    @TeamName NVARCHAR(50),
+    @TeamLogo VARBINARY(MAX)
+)
+AS
+BEGIN
+    UPDATE dbo.Team
+    SET TeamLogo = @TeamLogo
+    WHERE TeamName = @TeamName;
+END;
+GO
 
 -- Get teams with logos for a specified fan
 

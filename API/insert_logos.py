@@ -1,4 +1,19 @@
+from pathlib import Path
+import sys
+
+import pyodbc
+
 from get_db_connection import get_db_connection
+
+
+LOGO_DIR = Path(__file__).resolve().parent / "TeamLogos"
+
+
+def print_permission_help(error):
+    print("Could not insert logos because the database login is missing permission.")
+    print("Run the TeamLogo section in Data/DatabaseProgrammingObjectsHarris.sql")
+    print("using a database owner/admin account, then run this script again.")
+    print(f"SQL Server said: {error}")
 
 def insert_logos():
     teams = [
@@ -14,14 +29,14 @@ def insert_logos():
     cursor = conn.cursor()
 
     for team in teams:
-        filepath = f"TeamLogos/{team.replace(' ', '_')}.png"
+        filepath = LOGO_DIR / f"{team.replace(' ', '_')}.png"
 
         with open(filepath, "rb") as image_file:
             logo_data = image_file.read()
 
         cursor.execute(
-            "UPDATE Team SET TeamLogo = ? WHERE TeamName = ?",
-            (logo_data, team)
+            "{CALL dbo.procUpdateTeamLogo(?, ?)}",
+            (team, logo_data)
         )
 
     conn.commit()
@@ -31,4 +46,8 @@ def insert_logos():
     print("Logos inserted successfully.")
 
 if __name__ == "__main__":
-    insert_logos()
+    try:
+        insert_logos()
+    except pyodbc.ProgrammingError as error:
+        print_permission_help(error)
+        sys.exit(1)
