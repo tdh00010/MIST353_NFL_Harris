@@ -8,6 +8,7 @@ from get_teams_for_specified_fan import get_teams_for_specified_fan
 from schedule_game import schedule_game
 from get_all_teams import get_all_teams
 from get_all_stadiums import get_all_stadiums
+from get_teams_with_logos_for_specified_fan import get_teams_with_logos_for_specified_fan
 
 app = FastAPI()
 
@@ -54,3 +55,7 @@ def get_all_teams_api():
 @app.get("/get_all_stadiums")
 def get_all_stadiums_api():
     return get_all_stadiums()
+
+@app.get("/get_teams_with_logos_for_specified_fan")
+def get_teams_with_logos_for_specified_fan_api(fan_id: int):
+    return get_teams_with_logos_for_specified_fan(fan_id)

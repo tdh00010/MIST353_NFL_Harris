@@ -40,7 +40,7 @@ def get_teams_with_logos_for_specified_fan_ui():
 
             col2.write(row["TeamName"])
             col3.write(f"{row['Conference']} / {row['Division']}")
-            col4.write(row["TeamColors"])
+            col4.write(row["TeamColor"])
             col5.write("✅" if row["PrimaryTeam"] else "")
 
             st.divider()
